@@ -63,8 +63,8 @@ const App = ()=>{
       const height = webcamref.current.video.videoHeight;
       const width  = webcamref.current.video.videoWidth;
       
-      const www = ww/width
-      const wwh = wh/height
+      const www = ww/640
+      const wwh = wh/480
       // const pred = await net.estimatePoses(video)
       const pred = await net.estimateFaces({input:video})
 
@@ -90,8 +90,8 @@ const App = ()=>{
             ttw = (landmark.rightEyeLower0[0][0]-landmark.leftEyeLower0[0][0])*www*1.5
           }
 
-          setx(landmark.leftEyebrowLower[0][0])
-          sety(landmark.leftEyebrowLower[0][1])
+          setx(landmark.leftEyebrowLower[0][0]*www)
+          sety(landmark.leftEyebrowLower[0][1]*wwh)
           setth(tth)
           settw(ttw)
         }
