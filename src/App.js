@@ -134,10 +134,10 @@ const App = ()=>{
     if (setx && sety != null){
       console.log(th,tw)
       return(
-        <div className='point' style={{left:`${x}px` , top:`${y}px`} }>
+        <div className='point' style={{left:`${x-x/3}px` , top:`${y-y/4}px`} }>
           <img src={glass} style={ x&&y != null ?{            
             height:Math.abs(th),
-            width:tw,
+            width:tw*1.6,
           } : {
             height:0,
             width:0,
