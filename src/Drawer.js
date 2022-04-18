@@ -17,5 +17,7 @@ export const drawer = (prediction,ctx)=>{
                 ctx.fill();
             }
         })
+        ctx.translate(ctx.width/2,ctx.height/2)
+        ctx.scale(-1,1)
     }
 }

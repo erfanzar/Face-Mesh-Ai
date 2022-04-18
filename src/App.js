@@ -26,6 +26,9 @@ const App = ()=>{
     }, 10);
   };
 
+  const ww = window.innerWidth
+  const wh = window.innerHeight
+
   const detect = async (net) => {
     if (
       typeof webcamRef.current !== "undefined" &&
@@ -48,14 +51,13 @@ const App = ()=>{
       const pred = await net.estimateFaces({input:video});
       
       const ctx = canvasRef.current.getContext("2d");
-      requestAnimationFrame(()=>{drawMesh(pred, ctx)});
+      requestAnimationFrame(()=>{drawMesh(pred, ctx,videoHeight,videoWidth)});
+      
     }
   };
 
   useEffect(()=>{runModel()}, []);
 
-  const ww = window.innerWidth
-  const wh = window.innerHeight
   console.log(`width set to : ${ww}`)
   console.log(`height set to : ${wh}`)
 
