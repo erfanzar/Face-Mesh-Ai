@@ -1,187 +1,117 @@
 import './App.css';
 import React , {useEffect, useRef, useState} from 'react';
 import Webcam from 'react-webcam';
-import * as tf from '@tensorflow/tfjs'
-import * as model from '@tensorflow-models/pose-detection'
-import * as FcModel from '@tensorflow-models/face-landmarks-detection'
-import glass from './png_glasses_31208.png';
-const App = ()=>{
+import * as tf from '@tensorflow/tfjs';
+import * as FcModel from '@tensorflow-models/face-landmarks-detection';
 
+const drawer = (prediction,ctx)=>{
 
-  /// Start Defining Values
-
-  const webcamref = useRef(null);
-
-  const wh = window.innerHeight;
-  const ww = window.innerWidth;
-
-  var ttw = 0;
-
-  const [th , setth] = useState(null);
-  const [tw , settw] = useState(null);
-
-  const [x , setx] = useState(null);
-  const [y , sety] = useState(null);
-
-  const [past,setpast] = useState(null);
-  const [next,setnext] = useState(null);
-
-  const [neto, setNet] = useState(null);
-
-  /// End Defining Values
-
-  /// Start Function Run Model
-
-  const RunModel = async()=>{
-  
-    
-    const net = await FcModel.load(FcModel.SupportedPackages.mediapipeFacemesh,{maxFaces:1})
-    // const mdl = model.SupportedModels.MoveNet;
-    // const net = await model.createDetector(mdl);
-   
-    console.log("model Loaded");
-    if (net != null){
-      setNet(1)
-    }
-    setInterval(()=>{
-      detect(net)
-    } , 60)
-  }
-
-
-  /// End Function Run Model
-
-  /// Start Fucntion Detect
-
-  const detect = async (net)=>{
-    if (
-      typeof webcamref.current !== "undefined" &&
-      webcamref.current != null &&
-      webcamref.current.video.readyState === 4
-    ){
-      const video  = webcamref.current.video;
-      const height = webcamref.current.video.videoHeight;
-      const width  = webcamref.current.video.videoWidth;
-      
-      const www = ww/640
-      const wwh = wh/480
-      // const pred = await net.estimatePoses(video)
-      const pred = await net.estimateFaces({input:video})
-
-
-      // console.log(pred)
-
-      if(pred.length > 0){
-        for (let o of pred){
-          console.log(o.annotations)
-
-
-          // console.log(o.annotations.leftEyeIris[0][1],o.annotations.leftEyeIris[0][0])
-          // console.log(o.annotations.rightEyeIris[0][1],o.annotations.rightEyeIris[0][0])
-
-          const landmark = o.annotations
-
-          const tth = (landmark.leftEyeLower2[2][1]-landmark.leftEyebrowUpper[4][1])*wwh*1.2
+  if (prediction.length > 0){
+    // console.log('started');
+    prediction.forEach(pred=>{
+        const points = pred.scaledMesh;
+        for(let i=0; i < points.length;i++){
           
-
-          if (landmark.leftEyeLower0[0][0]>landmark.rightEyeLower0[0][0]){
-            ttw = (landmark.leftEyeLower0[0][0]-landmark.rightEyeLower0[0][0])*www*1.5
-          }else if (landmark.leftEyeLower0[0][0]<landmark.rightEyeLower0[0][0]){
-            ttw = (landmark.rightEyeLower0[0][0]-landmark.leftEyeLower0[0][0])*www*1.5
-          }
-
-          setx(landmark.leftEyebrowLower[0][0]*www)
-          sety(landmark.leftEyebrowLower[0][1]*wwh)
-          setth(tth)
-          settw(ttw)
-        }
-      }else{
-        setx(null);
-        sety(null);
-        // console.log('Null Set')
+          const x = points[i][0];
+          const y = points[i][1];
+          // console.log(x,y);
+          
+          console.log(ctx);
+          ctx.beginPath();
+          ctx.arc(x, y, 50, 0, 3 * Math.PI);
+          ctx.fill();
+          console.log(ctx);
       }
-
-      // if(pred.length > 0){
-      //   for (let o of pred){
-      //     console.log(o.keypoints)
-      //     const landmark = o.keypoints
-      //     setx(landmark[0].x*www)
-      //     sety(landmark[2].y*wwh)
-      //   }
-        
-      // }else{
-      //   setx(null);
-      //   sety(null);
-      //   console.log('Null Set')
-      // }
-    }
+    })
   }
-
-  /// End Fucntion Detect
-
-  /// Start UseEffect
-  useEffect(
-    ()=>{
-      RunModel();
-    },[]
-  )
-/// End UseEffect
-
-/// Start Effect USer Function
+}
 
 
-  const Effect = () => {
-    if (setx && sety != null){
-      console.log(th,tw)
-      return(
-        <div className='point' style={{left:`${x-x/3}px` , top:`${y-y/4}px`} }>
-          <img src={glass} style={ x&&y != null ?{            
-            height:Math.abs(th),
-            width:tw*1.6,
-          } : {
-            height:0,
-            width:0,
-          }}/>
-        </div>
-      )
-    }else{
-      return(
-        <div></div>
-      )
-    }
-  }
+const App = ()=>{
+  
+  const webcamRef = useRef(null);
+  const canvasRef = useRef(null);
 
+  const runModel = async () =>{
 
-  /// End Effect USer Function
-
-  /// Final Return From App Function
-
-
-  if (neto == null){
-    return(
-      <div className='loading'>
-        <p>
-          Loading ...
-        </p>
-      </div>
-    )
-  }
-  else{
-    return(
-      <div className='app'>
-        <div className='cont'>
-        <Webcam className='Camera'
-          ref={webcamref}
-          height={480}
-          width={640}       
-        />
-        { 
-          Effect()
-        }
-        </div>
-      </div>
+    const net  = await FcModel.load(
+      FcModel.SupportedPackages.mediapipeFacemesh
     );
+    console.log('Model Loaded SuccessFully');
+    setInterval(() => {
+      detection(net)
+    }, 60);
+    
+  };
+
+  const detection = async(net)=>{
+    if (
+      webcamRef.current !== null&&
+      typeof webcamRef.current != "undefined"&&
+      webcamRef.current.video.readyState === 4
+    ){
+
+
+      const video = webcamRef.current.video;
+      const videoHeight = webcamRef.current.videoHeight;
+      const videoWidth  = webcamRef.current.videoWidth;
+
+      webcamRef.current.video.height = videoHeight;
+      webcamRef.current.video.width  = videoWidth;
+
+      canvasRef.current.width  = videoWidth;
+      canvasRef.current.height = videoHeight;
+
+      const Prediction = await net.estimateFaces({input:video});
+
+
+    
+      const ctx = canvasRef.current.getContext("2d");
+
+      // console.log(ctx);
+      requestAnimationFrame(()=>{drawer(Prediction,ctx)})
+        
+    }
   }
+
+  useEffect(()=>{runModel()},[])
+
+  return(
+    <div>
+      <header>
+      <Webcam
+        ref={webcamRef}
+        height={480}
+        width={640}
+        style={{
+          position: "absolute",
+          marginLeft: "auto",
+          marginRight: "auto",
+          left: 0,
+          right: 0,
+          textAlign: "center",
+          zindex: 9,
+          width: 640,
+          height: 480,
+        }}
+      />
+      <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        marginLeft: "auto",
+        marginRight: "auto",
+        left: 0,
+        right: 0,
+        textAlign: "center",
+        zindex: 9,
+        width: 640,
+        height: 480,
+      }}
+      />
+      </header>
+    </div>
+  )
 }
 
 export default App;
