@@ -4,16 +4,19 @@ import Webcam from 'react-webcam';
 import * as tf from '@tensorflow/tfjs';
 import * as Model from '@tensorflow-models/face-landmarks-detection';
 import { drawMesh } from './utilities';
+// import img from 'src/Glass.png'
 
 
 
 const App = ()=>{
 
   const webcamRef = useRef(null);
-  const canvasRef = useRef(null);
+  const divRef = useRef(null);
 
   const [load , setLoad] = useState(null);
   var  net = null
+  // var img = new Image()
+  // img.src = './png_glasses_31208.png'
  
   const runModel = async () => {
   
@@ -28,6 +31,31 @@ const App = ()=>{
 
   const ww = window.innerWidth
   const wh = window.innerHeight
+
+  
+  const le = 71
+  const re = 300
+  const el = 127
+  const er = 356
+  const nose = 4
+  
+  const [xle,setxle] = useState(null);
+  const [yle,setyle] = useState(null);
+  
+  const [xre,setxre] = useState(null);
+  const [yre,setyre] = useState(null);
+
+  const [xel,setxel] = useState(null);
+  const [yel,setyel] = useState(null);
+
+  const [xer,setxer] = useState(null);
+  const [yer,setyer] = useState(null);
+
+  const [xnose,setxnose] = useState(null);
+  const [ynose,setynose] = useState(null);
+
+  const [lmlist,setlmlist] = useState(null);
+
 
   const detect = async (net) => {
     if (
@@ -45,22 +73,49 @@ const App = ()=>{
       webcamRef.current.video.height = videoHeight;
 
       
-      canvasRef.current.width = videoWidth;
-      canvasRef.current.height = videoHeight;
+      divRef.current.width = videoWidth;
+      divRef.current.height = videoHeight;
 
       const pred = await net.estimateFaces({input:video});
-      
-      const ctx = canvasRef.current.getContext("2d");
-      requestAnimationFrame(()=>{drawMesh(pred, ctx,videoHeight,videoWidth)});
-      
+
+
+
+      if (pred.length > 0){
+        
+        pred.forEach(prediction => {
+
+          var lm = prediction.scaledMesh;
+
+          setxle(Math.abs(lm[le][0]-videoWidth));   //DONE
+          setyle(Math.abs(lm[le][1]  ));            //DONE
+        
+          setxre(Math.abs(lm[re][0]-videoWidth)); //DONE
+          setyre(Math.abs(lm[re][1]  ));          //DONE
+
+          setxel(Math.abs(lm[el][0]-videoWidth));  //DONE
+          setyel(Math.abs(lm[el][1]  ));           //DONE
+
+          setxer(Math.abs(lm[er][0]-videoWidth)); //DONE
+          setyer(Math.abs(lm[er][1]  ));          //DONE
+
+          setxnose(Math.abs(lm[nose][0]-videoWidth)); //DONE
+          setynose(Math.abs(lm[nose][1]  ));          //DONE
+          setlmlist([[xle,yle],[xre,yre],[xel,yel],[xer,yer],[xnose,ynose]]);//DONE
+
+        });
+      }
     }
   };
 
-  useEffect(()=>{runModel()}, []);
+  useEffect(()=>{
+    runModel()
+    console.log(`width set to : ${ww}`)
+    console.log(`height set to : ${wh}`)
+  
+  }, []);
 
-  console.log(`width set to : ${ww}`)
-  console.log(`height set to : ${wh}`)
-
+  console.log(divRef);
+  
   if(load != null){
     return (
       <div className="App">
@@ -81,8 +136,9 @@ const App = ()=>{
             }}
           />
 
-          <canvas
-            ref={canvasRef}
+          <div
+            ref={divRef}
+            
             style={{
               position: "absolute",
               marginLeft: "auto",
@@ -93,8 +149,21 @@ const App = ()=>{
               zindex: 9,
               width: {ww},
               height: {wh},
+
             }}
-          />
+          >
+            {
+              xel != null && 
+              <img src='src/Glass.png' style={{
+                left:`${xle}px`,
+                top:`${yre}px`,
+                zIndex:15,
+                height:70,
+                width:150
+              }}></img>
+            }
+
+          </div>
         </header>
       </div>
     );

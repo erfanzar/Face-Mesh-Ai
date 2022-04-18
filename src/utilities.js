@@ -1,5 +1,9 @@
-export const drawMesh = (predictions, ctx,vh,vw) => {
+// import image from './png_glasses_31208.png'
 
+export const drawMesh = (predictions, ctx,vh,vw) => {
+    const image = new Image()
+    // image.src='./png_glasses_31208'
+    
     if (predictions.length > 0) {
 
       predictions.forEach((prediction) => {
@@ -10,7 +14,7 @@ export const drawMesh = (predictions, ctx,vh,vw) => {
         const el = 127
         const er = 356
         const nose = 4
-
+        
         const xle = Math.abs(lm[le][0]-vw); //DONE
         const yle = Math.abs(lm[le][1]  );  //DONE
         
@@ -25,7 +29,7 @@ export const drawMesh = (predictions, ctx,vh,vw) => {
 
         const xnose = Math.abs(lm[nose][0]-vw);
         const ynose = Math.abs(lm[nose][1]  );
-
+        ctx.drawImage(image,xle,yle)
         const lmlist = [[xle,yle],[xre,yre],[xel,yel],[xer,yer],[xnose,ynose]]
         
         console.log(lm.length)
