@@ -8,7 +8,12 @@ export const drawer = (prediction,ctx)=>{
 
                 ctx.beginPath();
                 ctx.arc(x,y,1,0,3*Math.PI);
-                ctx.fillStyle='aqua';
+               
+                if(i>250){
+                    ctx.fillStyle='red';
+                }else{
+                    ctx.fillStyle='aqua';
+                }
                 ctx.fill();
             }
         })
