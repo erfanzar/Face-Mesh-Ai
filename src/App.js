@@ -65,6 +65,7 @@ const App = ()=>{
         <header className="App-header">
           <Webcam
             ref={webcamRef}
+            mirrored={true}
             style={{
               position: "absolute",
               marginLeft: "auto",
