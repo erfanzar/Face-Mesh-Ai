@@ -13,7 +13,7 @@ const App = ()=>{
   const canvasRef = useRef(null);
 
   const [load , setLoad] = useState(null);
-  const  net = null
+  var  net = null
  
   const runModel = async () => {
   
@@ -56,6 +56,9 @@ const App = ()=>{
 
   const ww = window.innerWidth
   const wh = window.innerHeight
+  console.log(`width set to : ${ww}`)
+  console.log(`height set to : ${wh}`)
+
   if(load != null){
     return (
       <div className="App">
