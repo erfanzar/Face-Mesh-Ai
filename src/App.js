@@ -2,116 +2,103 @@ import './App.css';
 import React , {useEffect, useRef, useState} from 'react';
 import Webcam from 'react-webcam';
 import * as tf from '@tensorflow/tfjs';
-import * as FcModel from '@tensorflow-models/face-landmarks-detection';
+import * as Model from '@tensorflow-models/face-landmarks-detection';
+import { drawMesh } from './utilities';
 
-const drawer = (prediction,ctx)=>{
-
-  if (prediction.length > 0){
-    // console.log('started');
-    prediction.forEach(pred=>{
-        const points = pred.scaledMesh;
-        for(let i=0; i < points.length;i++){
-          
-          const x = points[i][0];
-          const y = points[i][1];
-          // console.log(x,y);
-          
-          console.log(ctx);
-          ctx.beginPath();
-          ctx.arc(x, y, 50, 0, 3 * Math.PI);
-          ctx.fill();
-          console.log(ctx);
-      }
-    })
-  }
-}
 
 
 const App = ()=>{
-  
+
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
 
-  const runModel = async () =>{
-
-    const net  = await FcModel.load(
-      FcModel.SupportedPackages.mediapipeFacemesh
-    );
-    console.log('Model Loaded SuccessFully');
+  const [load , setLoad] = useState(null);
+  const  net = null
+ 
+  const runModel = async () => {
+  
+    net = await Model.load(Model.SupportedPackages.mediapipeFacemesh);
+    if(net != null ){
+      setLoad(1)
+    }
     setInterval(() => {
-      detection(net)
-    }, 60);
-    
+      detect(net);
+    }, 10);
   };
 
-  const detection = async(net)=>{
+  const detect = async (net) => {
     if (
-      webcamRef.current !== null&&
-      typeof webcamRef.current != "undefined"&&
+      typeof webcamRef.current !== "undefined" &&
+      webcamRef.current !== null &&
       webcamRef.current.video.readyState === 4
-    ){
-
-
+    ) {
+     
       const video = webcamRef.current.video;
-      const videoHeight = webcamRef.current.videoHeight;
-      const videoWidth  = webcamRef.current.videoWidth;
+      const videoWidth = webcamRef.current.video.videoWidth;
+      const videoHeight = webcamRef.current.video.videoHeight;
 
+      
+      webcamRef.current.video.width = videoWidth;
       webcamRef.current.video.height = videoHeight;
-      webcamRef.current.video.width  = videoWidth;
 
-      canvasRef.current.width  = videoWidth;
+      
+      canvasRef.current.width = videoWidth;
       canvasRef.current.height = videoHeight;
 
-      const Prediction = await net.estimateFaces({input:video});
-
-
-    
+      const pred = await net.estimateFaces({input:video});
+      
       const ctx = canvasRef.current.getContext("2d");
-
-      // console.log(ctx);
-      requestAnimationFrame(()=>{drawer(Prediction,ctx)})
-        
+      requestAnimationFrame(()=>{drawMesh(pred, ctx)});
     }
+  };
+
+  useEffect(()=>{runModel()}, []);
+
+  const ww = window.innerWidth
+  const wh = window.innerHeight
+  if(load != null){
+    return (
+      <div className="App">
+        <header className="App-header">
+          <Webcam
+            ref={webcamRef}
+            style={{
+              position: "absolute",
+              marginLeft: "auto",
+              marginRight: "auto",
+              left: 0,
+              right: 0,
+              textAlign: "center",
+              zindex: 9,
+              width: {ww},
+              height: {wh},
+            }}
+          />
+
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: "absolute",
+              marginLeft: "auto",
+              marginRight: "auto",
+              left: 0,
+              right: 0,
+              textAlign: "center",
+              zindex: 9,
+              width: {ww},
+              height: {wh},
+            }}
+          />
+        </header>
+      </div>
+    );
+  }else{
+    return(
+      <div className='loading'>
+        <p>Loading Model From Server...</p>
+      </div>
+    )
   }
-
-  useEffect(()=>{runModel()},[])
-
-  return(
-    <div>
-      <header>
-      <Webcam
-        ref={webcamRef}
-        height={480}
-        width={640}
-        style={{
-          position: "absolute",
-          marginLeft: "auto",
-          marginRight: "auto",
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          zindex: 9,
-          width: 640,
-          height: 480,
-        }}
-      />
-      <canvas
-      ref={canvasRef}
-      style={{
-        position: "absolute",
-        marginLeft: "auto",
-        marginRight: "auto",
-        left: 0,
-        right: 0,
-        textAlign: "center",
-        zindex: 9,
-        width: 640,
-        height: 480,
-      }}
-      />
-      </header>
-    </div>
-  )
 }
 
 export default App;
