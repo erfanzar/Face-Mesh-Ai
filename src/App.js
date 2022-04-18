@@ -17,7 +17,7 @@ const App = ()=>{
  
   const runModel = async () => {
   
-    net = await Model.load(Model.SupportedPackages.mediapipeFacemesh);
+    net = await Model.load(Model.SupportedPackages.mediapipeFacemesh,{maxFaces:1});
     if(net != null ){
       setLoad(1)
     }
