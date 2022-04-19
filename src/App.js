@@ -14,6 +14,7 @@ const App = ()=>{
   const divRef = useRef(null);
   const canvasRef = useRef(null);
 
+  const [transform,setTransform] = useState(null);
 
   const [gh,setgh] = useState(null);
   const [gw,setgw] = useState(null);
@@ -50,8 +51,8 @@ const App = ()=>{
     }, 10);
   };
 
-  const ww = window.innerWidth
-  const wh = window.innerHeight
+  const ww = 640;
+  const wh = 480;
 
   
   const le = 71
@@ -96,31 +97,51 @@ const App = ()=>{
 
           var lm = prediction.scaledMesh;
 
-          setxle(Math.abs(lm[le][0]-videoWidth));   //DONE
-          setyle(Math.abs(lm[le][1]  ));            //DONE
+          setxle(Math.abs(lm[le][0]));   //DONE
+          setyle(Math.abs(lm[le][1]));            //DONE
         
-          setxre(Math.abs(lm[re][0]-videoWidth)); //DONE
-          setyre(Math.abs(lm[re][1]  ));          //DONE
+          setxre(Math.abs(lm[re][0])); //DONE
+          setyre(Math.abs(lm[re][1]));            //DONE
 
-          setxel(Math.abs(lm[el][0]-videoWidth));  //DONE
-          setyel(Math.abs(lm[el][1]  ));           //DONE
+          setxel(Math.abs(lm[el][0]));  //DONE
+          setyel(Math.abs(lm[el][1]));            //DONE
 
-          setxer(Math.abs(lm[er][0]-videoWidth)); //DONE
-          setyer(Math.abs(lm[er][1]  ));          //DONE
+          setxer(Math.abs(lm[er][0])); //DONE
+          setyer(Math.abs(lm[er][1]));            //DONE
 
-          setxnose(Math.abs(lm[nose][0]-videoWidth)); //DONE
-          setynose(Math.abs(lm[nose][1]  ));          //DONE
+          setxnose(Math.abs(lm[nose][0])); //DONE
+          setynose(Math.abs(lm[nose][1]));          //DONE
           setlmlist([[xle,yle],[xre,yre],[xel,yel],[xer,yer],[xnose,ynose]]);//DONE
-
+          
+          setTransform((yle-yre)/4); //DONE
+          
           ctx.beginPath();
           ctx.arc(xle,yle,5,0,3*Math.PI)
           ctx.fillStyle = 'aqua'
           ctx.fill()
+          console.log((Math.abs(lm[le][1])-Math.abs(lm[re][1]))/4);
           setgh(xre-xle+xle)
           // console.log(
             // xre-xle+xle,` xre :${xre} xle :${xle}`
           // );
         });
+      }else{
+        setxle(null);   //DONE
+        setyle(null);            //DONE
+      
+        setxre(null); //DONE
+        setyre(null);            //DONE
+
+        setxel(null);  //DONE
+        setyel(null);            //DONE
+
+        setxer(null); //DONE
+        setyer(null);            //DONE
+
+        setxnose(null); //DONE
+        setynose(null);
+                  //DONE
+        setlmlist(null);//DONE
       }
     }
   };
@@ -142,7 +163,7 @@ const App = ()=>{
         <header className="App-header">
           <Webcam
             ref={webcamRef}
-            mirrored={true}
+            // mirrored={true}
             style={{
               position: "absolute",
               marginLeft: "auto",
@@ -151,8 +172,9 @@ const App = ()=>{
               right: 0,
               textAlign: "center",
               zindex: 9,
-              width: {ww},
-              height: {wh},
+              width: `${640}px`,
+              height: `${480}px`,
+  
             }}
           />
           <canvas
@@ -166,8 +188,9 @@ const App = ()=>{
             right: 0,
             textAlign: "center",
             zindex: 9,
-            width: {ww},
-            height: {wh},
+            width: `${640}px`,
+            height: `${480}px`,
+
           }}
           >
           </canvas>
@@ -181,21 +204,31 @@ const App = ()=>{
               right: 0,
               textAlign: "center",
               zindex: 9,
-              width: {ww},
-              height: {wh},
+              width: `${640}px`,
+              height: `${480}px`,
 
             }}
           > 
             {
               xel != null ?
-              <img src='/assets/Glass.png' style={{
+              <img src='/assets/Glass.png' style={xle != null || -9<transform<3 ?{
+                
                 left:`${xle}px`,
                 top:`${yre}px`,
                 zIndex:15,
-                height:`${70}px`,
-                width:'150px',
+                height:`${(xre-xle)/3}px`,
+                width:`${xre-xle}px`,
                 position:'absolute',
-
+                transform:`rotate(${transform}deg)`
+                
+              } : {
+                left:`${0}px`,
+                top:`${0}px`,
+                
+                zIndex:15,
+                height:`${0}px`,
+                width:`${0}px`,
+                position:'absolute',
               }}></img> :<div/>
             }
 
