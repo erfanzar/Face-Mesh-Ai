@@ -14,6 +14,8 @@ const App = ()=>{
   const divRef = useRef(null);
   const canvasRef = useRef(null);
 
+  const [translate,setTranslate] = useState(0);
+
   const [transformds,setTransform] = useState(null);
 
   const [gh,setgh] = useState(null);
@@ -57,7 +59,6 @@ const App = ()=>{
   const ww = 640;
   const wh = 480;
 
-  
   const le = 71
   const re = 300
   const el = 127
@@ -116,13 +117,13 @@ const App = ()=>{
           setynose(Math.abs(lm[nose][1]));          //DONE
           setlmlist([[xle,yle],[xre,yre],[xel,yel],[xer,yer],[xnose,ynose]]);//DONE
           
-          setTransform((yle-yre)/4); //DONE
+          setTransform((yle-yre / 2)); //DONE
           trapa = transformds;
           ctx.beginPath();
           ctx.arc(xle,yle,5,0,3*Math.PI)
           ctx.fillStyle = 'aqua'
           ctx.fill()
-          console.log((Math.abs(lm[le][1])-Math.abs(lm[re][1]))/4);
+          console.log((Math.abs(lm[le][1])-Math.abs(lm[re][1]))/2);
           setgh(xre-xle+xle)
           // console.log(
             // xre-xle+xle,` xre :${xre} xle :${xle}`
@@ -143,7 +144,7 @@ const App = ()=>{
 
         setxnose(null); //DONE
         setynose(null);
-                  //DONE
+                  //DONEtrapa
         setlmlist(null);//DONE
       
         trapa = null
@@ -155,12 +156,16 @@ const App = ()=>{
     runModel()
     console.log(`width set to : ${ww}`)
     console.log(`height set to : ${wh}`)
-  
+    
+    // for(let b=0;b<100;b++){
+    //   setTimeout(()=>{
+    //   setTranslate(b)},900)
+    // }
   }, []);
 
   // console.log(`gh set to : ${gh}`)
 
-  console.log(trapa);
+  // console.log(trapa);
   // if (transform != null){
   //   if (trapa < 3){
     
@@ -183,12 +188,13 @@ const App = ()=>{
   //   };
   // };
   if(load != null){
+  // if(1>2){
     return (
       <div className="App">
         <header className="App-header">
           <Webcam
             ref={webcamRef}
-            // mirrored={true}
+            mirrored={true}
             style={{
               position: "absolute",
               marginLeft: "auto",
@@ -203,9 +209,11 @@ const App = ()=>{
             }}
           />
           <canvas
+          
           ref={canvasRef}
           
           style={{
+          
             position: "absolute",
             marginLeft: "auto",
             marginRight: "auto",
@@ -217,11 +225,16 @@ const App = ()=>{
             height: `${480}px`,
 
           }}
-          >
-          </canvas>
+
+          />
+          
+          
           <div
+            
             ref={divRef}
+            
             style={{
+
               position: "absolute",
               marginLeft: "auto",
               marginRight: "auto",
@@ -237,8 +250,9 @@ const App = ()=>{
             {
               xel != null ?
               <img src='/assets/Glass.png' style={xle != null  ?{
-                
-                left:`${xle}px`,
+          
+
+                right:`${xle}px`,
                 top:`${yre}px`,
                 zIndex:15,
                 height:`${(xre-xle)/3}px`,
@@ -264,7 +278,13 @@ const App = ()=>{
   }else{
     return(
       <div className='loading'>
-        <p>Loading Model From Server...</p>
+        <p style={{
+          // transform:`translatey(${translate}px)`
+        }}>
+          Loading Model From Server...
+          Please Be Paitent   
+        </p>
+        
       </div>
     )
   }
