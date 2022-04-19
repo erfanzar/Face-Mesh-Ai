@@ -14,10 +14,13 @@ const App = ()=>{
   const divRef = useRef(null);
   const canvasRef = useRef(null);
 
-  const [transform,setTransform] = useState(null);
+  const [transformds,setTransform] = useState(null);
 
   const [gh,setgh] = useState(null);
   const [gw,setgw] = useState(null);
+
+  const [to,setto] = useState(null);
+  const [tt,settt] = useState(null);
 
   const [xle,setxle] = useState(null);
   const [yle,setyle] = useState(null);
@@ -61,7 +64,7 @@ const App = ()=>{
   const er = 356
   const nose = 4
   
-
+  var trapa = null;
 
   const detect = async (net) => {
     if (
@@ -114,7 +117,7 @@ const App = ()=>{
           setlmlist([[xle,yle],[xre,yre],[xel,yel],[xer,yer],[xnose,ynose]]);//DONE
           
           setTransform((yle-yre)/4); //DONE
-          
+          trapa = transformds;
           ctx.beginPath();
           ctx.arc(xle,yle,5,0,3*Math.PI)
           ctx.fillStyle = 'aqua'
@@ -142,6 +145,8 @@ const App = ()=>{
         setynose(null);
                   //DONE
         setlmlist(null);//DONE
+      
+        trapa = null
       }
     }
   };
@@ -155,8 +160,28 @@ const App = ()=>{
 
   // console.log(`gh set to : ${gh}`)
 
-  // console.log(divRef);
-  
+  console.log(trapa);
+  // if (transform != null){
+  //   if (trapa < 3){
+    
+  //     settt(true);
+    
+  //   }else{
+    
+  //     settt(false);
+    
+  //   };
+    
+  //   if (trapa > -9){
+    
+  //     setto(true);
+    
+  //   }else{
+    
+  //     setto(false);
+    
+  //   };
+  // };
   if(load != null){
     return (
       <div className="App">
@@ -211,7 +236,7 @@ const App = ()=>{
           > 
             {
               xel != null ?
-              <img src='/assets/Glass.png' style={xle != null || -9<transform<3 ?{
+              <img src='/assets/Glass.png' style={xle != null  ?{
                 
                 left:`${xle}px`,
                 top:`${yre}px`,
@@ -219,7 +244,7 @@ const App = ()=>{
                 height:`${(xre-xle)/3}px`,
                 width:`${xre-xle}px`,
                 position:'absolute',
-                transform:`rotate(${transform}deg)`
+                transform:`rotate(${transformds}deg)`
                 
               } : {
                 left:`${0}px`,
