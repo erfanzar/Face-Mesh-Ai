@@ -3,7 +3,9 @@ import React , {useEffect, useRef, useState} from 'react';
 import Webcam from 'react-webcam';
 import * as tf from '@tensorflow/tfjs';
 import * as Model from '@tensorflow-models/face-landmarks-detection';
-import { drawMesh } from './utilities';
+import { drawMeshs } from './utilities';
+
+
 // import glass from '/assets/Glass.png';
 // import img from 'public/assets/Glass.png'
 
@@ -18,6 +20,107 @@ import { drawMesh } from './utilities';
 
 // xel for the position of X Left Ear
 // yel for the position of Y Left Ear
+
+// import image from './png_glasses_31208.png'
+
+const drawMesh = (predictions, ctx,vh,vw) => {
+  const image = new Image()
+  // image.src='./png_glasses_31208'
+  
+  if (predictions.length > 0) {
+
+    predictions.forEach((prediction) => {
+
+      const lm = prediction.scaledMesh;
+      const le = 71
+      const re = 300
+      const el = 127
+      const er = 356
+      const nose = 4
+      
+      const xle = Math.abs(lm[le][0]-vw); //DONE
+      const yle = Math.abs(lm[le][1]  );  //DONE
+      
+      const xre = Math.abs(lm[re][0]-vw);
+      const yre = Math.abs(lm[re][1]  );
+
+      const xel = Math.abs(lm[el][0]-vw);
+      const yel = Math.abs(lm[el][1]  );
+
+      const xer = Math.abs(lm[er][0]-vw);
+      const yer = Math.abs(lm[er][1]  );
+
+      const xnose = Math.abs(lm[nose][0]-vw);
+      const ynose = Math.abs(lm[nose][1]  );
+      ctx.drawImage(image,xle,yle)
+      const lmlist = [[xle,yle],[xre,yre],[xel,yel],[xer,yer],[xnose,ynose]]
+      
+      console.log(lm.length)
+      
+      // lmlist.forEach(j=>{
+      //   ctx.beginPath();
+      //   const x = j[0]
+      //   const y = j[1]
+      //   ctx.arc(x,y,2,0,3*Math.PI)
+        // ctx.closePath();
+      // })
+      ctx.arc(xle,yle,2,0,3*Math.PI)
+      ctx.arc(xre,yre,2,0,3*Math.PI)
+      // ctx.arc(xel,yel,2,0,3*Math.PI)
+      // ctx.arc(xer,yer,2,0,3*Math.PI)
+      // ctx.arc(xnose,ynose,2,0,3*Math.PI)
+
+
+      for (let i = 0; i < lm.length; i++) {
+
+        if(0<i<100){
+          ctx.fillStyle='aqua';
+          if (100<i<200){
+            ctx.fillStyle='green';
+            if (200<i<300){
+              ctx.fillStyle='green';
+              if (300<i<400){
+                ctx.fillStyle='black';
+                if (400<i<500){
+                  ctx.fillStyle='red';
+                }        
+              }
+            }
+          }  
+        }
+        
+        ctx.fill();
+      }
+    })
+
+  }
+};
+
+const drawer = (prediction,ctx)=>{
+  if (prediction.lenght > 0){
+      prediction.forEach(pred=>{
+          const points = pred.scaledMesh;
+          for(let i=0; i < points.lenght;i++){
+              const x = points[i][0]
+              const y = points[i][1]
+
+              ctx.beginPath();
+              ctx.arc(x,y,1,0,3*Math.PI);
+             
+              if(i>250){
+                  ctx.fillStyle='red';
+              }else{
+                  ctx.fillStyle='aqua';
+              }
+              ctx.fill();
+          }
+      })
+      ctx.translate(ctx.width/2,ctx.height/2)
+      ctx.scale(-1,1)
+  }
+}
+
+
 
 const App = ()=>{
 
@@ -87,7 +190,7 @@ const App = ()=>{
   const wh = 480;
 
   const le = 71;
-  const re = 300;
+  const re = 301;
   const el = 162;
   const er = 389;
   const nose = 4;
@@ -125,7 +228,7 @@ const App = ()=>{
       // console.log(ctx);
       
       if (pred.length > 0){
-        var ctx = canvasRef.current.getContext("2d");
+        // var ctx = canvasRef.current.getContext("2d");
         pred.forEach(prediction => {
 
           var lm = prediction.scaledMesh;
@@ -148,15 +251,15 @@ const App = ()=>{
           
           setTransform((yle-yre / 2)); //DONE
           trapa = transformds;
-          ctx.beginPath();
-          ctx.arc(xle,yle,5,0,3*Math.PI)
-          ctx.fillStyle = 'aqua'
-          ctx.fill()
-          // console.log((Math.abs(lm[le][1])-Math.abs(lm[re][1]))/2);
+          // ctx.beginPath();
+          // ctx.arc(xle,yle,5,0,3*Math.PI)
+          // ctx.fillStyle = 'aqua'
+          // ctx.fill()
+          console.log((Math.abs(lm[le][1])-Math.abs(lm[re][1]))/2);
           setgh(xre-xle+xle)
-          // console.log(
-            // xre-xle+xle,` xre :${xre} xle :${xle}`
-          // );
+          console.log(
+            xre-xle+xle,` xre :${xre} xle :${xle}`
+          );
 
           txel = Math.abs(lm[el][0])
           tyel = Math.abs(lm[el][1])
@@ -173,12 +276,12 @@ const App = ()=>{
           const  wcpLeft  = txel - txle
           const  wcpRight = txre - txer
           
-          // console.log(`wcpRight: ${wcpRight}`)
-          // console.log(txel,txle,txre,txer);
-          // console.log(`wcpLeft: ${wcpLeft}`)
-          // console.log('left eye',xle);
-          // console.log('ear left',xel);
-          // console.log(`xeye:${txle},xear:${txel},di:${wcpLeft}`);
+          console.log(`wcpRight: ${wcpRight}`)
+          console.log(txel,txle,txre,txer);
+          console.log(`wcpLeft: ${wcpLeft}`)
+          console.log('left eye',xle);
+          console.log('ear left',xel);
+          console.log(`xeye:${txle},xear:${txel},di:${wcpLeft}`);
           if ( wcpLeft > resemicalDistance )
           {
             setshowCornerLeft(true)
@@ -237,8 +340,8 @@ const App = ()=>{
   if (
      showCornerLeft != null
   ){
-    // console.log(`corner Right set to : ${showCornerRight}`)
-    // console.log(`corner Left  set to : ${showCornerLeft}`)
+    console.log(`corner Right set to : ${showCornerRight}`)
+    console.log(`corner Left  set to : ${showCornerLeft}`)
   }
   // console.log(`postion of x set to : ${xel}`)
   // console.log(`postion of y set to : ${yel}`)
@@ -257,8 +360,8 @@ const App = ()=>{
   // };
 
 
-  // console.log(`corner Right set to : ${showCornerRight}`)
-  // console.log(`corner Left  set to : ${showCornerLeft}`)
+  console.log(`corner Right set to : ${showCornerRight}`)
+  console.log(`corner Left  set to : ${showCornerLeft}`)
 
 
   var lefteyex = xle
@@ -365,29 +468,57 @@ const App = ()=>{
 
             {
               xel != null && showCornerLeft !== null && leftearx-lefteyex>5 ? 
-              <img
-              src='/assets/Corner.png'
-              style={showCornerLeft !== null ?{
-              position: "absolute",
-              top: `${(yel)}px`,
-              right: `${(xer-(xer/6.5) )}px`,
-              zindex: 16,
-              width:  `${Math.abs(leftearx-righteyex)}px`,
-              height: `${Math.abs(lefteary-lefteyey)*8}px`,
-              transform:`skewx(${15}deg)`
-              // width:200,
-              // height:80,
-              }:{
-                position: "absolute",
-                top: `${0}px`,
-                right: `${0}px`,
-                zindex: 9,
-                width: `${0}px`,
-                height: `${0}px`,
-              }}
-              />:<div></div>
+               <img 
+               src='/assets/CornerLeft.png'
+               style={showCornerLeft !== null ?{
+               position: "absolute",
+               top: `${(yre)}px`,
+               right: `${(xer-((Math.abs(leftearx-righteyex)/4)))}px`,
+               zindex: 16,
+               width:  `${Math.abs(leftearx-righteyex)/2}px`,
+              // width:30,
+              // height:30,
+              // borderRadius:30,
+               height: `${Math.abs(lefteary-lefteyey)*7}px`,
+               transform:`skewx(${15}deg)`,
+              //  backgroundColor:'cyan'
+               }:{
+                 position: "absolute",
+                 top: `${0}px`,
+                 right: `${0}px`,
+                 zindex: 9,
+                 width: `${0}px`,
+                 height: `${0}px`,
+               }}
+               />:<div></div>
             }
-             {
+            {
+              xer != null && showCornerRight !== null && rightearx-righteyex<5 ? 
+               <img 
+               src='/assets/CornerRight.png'
+               style={showCornerRight !== null ?{
+               position: "absolute",
+               top: `${(yre)}px`,
+               right: `${(xel-((Math.abs(rightearx-lefteyex)/4)))}px`,
+               zindex: 16,
+               width:  `${Math.abs(rightearx-lefteyex)/2}px`,
+              // width:30,
+              // height:30,
+              // borderRadius:30,
+               height: `${Math.abs(righteary-righteyey)*7}px`,
+               transform:`skewx(${15}deg)`,
+              //  backgroundColor:'cyan'
+               }:{
+                 position: "absolute",
+                 top: `${0}px`,
+                 right: `${0}px`,
+                 zindex: 9,
+                 width: `${0}px`,
+                 height: `${0}px`,
+               }}
+               />:<div></div>
+            }
+             {/* {
               xer != null && showCornerRight !== null && rightearx-righteyex>5 ? 
               <img
               src='/assets/Corner.png'
@@ -410,7 +541,7 @@ const App = ()=>{
                 height: `${0}px`,
               }}
               />:<div></div>
-            }
+            } */}
            
           </div>
         </header>
