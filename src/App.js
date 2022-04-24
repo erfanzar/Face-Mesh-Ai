@@ -4,11 +4,24 @@ import Webcam from 'react-webcam';
 import * as tf from '@tensorflow/tfjs';
 import * as Model from '@tensorflow-models/face-landmarks-detection';
 import { drawMesh } from './utilities';
+// import glass from '/assets/Glass.png';
 // import img from 'public/assets/Glass.png'
 
+// xle for the position of X Left Eye
+// yle for the position of Y Left Eye
 
+// xre for the position of X Right Eye
+// yre for the position of Y Right Eye
+
+// xer for the position of X Right Ear
+// yer for the position of Y Right Ear
+
+// xel for the position of X Left Ear
+// yel for the position of Y Left Ear
 
 const App = ()=>{
+
+  var resemicalDistance = 2
 
   const webcamRef = useRef(null);
   const divRef = useRef(null);
@@ -17,12 +30,16 @@ const App = ()=>{
   const [translate,setTranslate] = useState(0);
 
   const [transformds,setTransform] = useState(null);
-
+  const [showCornerLeft ,setshowCornerLeft  ] = useState(null)
+  const [showCornerRight,setshowCornerRight ] = useState(null)
   const [gh,setgh] = useState(null);
   const [gw,setgw] = useState(null);
 
   const [to,setto] = useState(null);
   const [tt,settt] = useState(null);
+
+  const [xlp,setxlp] = useState(null);
+  const [ylp,setylp] = useState(null);
 
   const [xle,setxle] = useState(null);
   const [yle,setyle] = useState(null);
@@ -41,15 +58,25 @@ const App = ()=>{
 
   const [lmlist,setlmlist] = useState(null);
 
+  var txle = 0;
+  var tyle = 0;
+  var txre = 0;
+  var tyre = 0;
+  
+  var txer = 0;
+  var tyer = 0;
+  var txel = 0;
+  var tyel = 0;
+  
 
   const [load , setLoad] = useState(null);
-  var  net = null
+  var  net = null;
 
   const runModel = async () => {
   
     net = await Model.load(Model.SupportedPackages.mediapipeFacemesh,{maxFaces:1});
     if(net != null ){
-      setLoad(1)
+      setLoad(1);
     }
     setInterval(() => {
       detect(net);
@@ -59,13 +86,15 @@ const App = ()=>{
   const ww = 640;
   const wh = 480;
 
-  const le = 71
-  const re = 300
-  const el = 127
-  const er = 356
-  const nose = 4
+  const le = 71;
+  const re = 300;
+  const el = 162;
+  const er = 389;
+  const nose = 4;
   
-  var trapa = null;
+  let trapa = null;
+
+
 
   const detect = async (net) => {
     if (
@@ -123,11 +152,49 @@ const App = ()=>{
           ctx.arc(xle,yle,5,0,3*Math.PI)
           ctx.fillStyle = 'aqua'
           ctx.fill()
-          console.log((Math.abs(lm[le][1])-Math.abs(lm[re][1]))/2);
+          // console.log((Math.abs(lm[le][1])-Math.abs(lm[re][1]))/2);
           setgh(xre-xle+xle)
           // console.log(
             // xre-xle+xle,` xre :${xre} xle :${xle}`
           // );
+
+          txel = Math.abs(lm[el][0])
+          tyel = Math.abs(lm[el][1])
+
+          txle = Math.abs(lm[le][0])
+          tyle = Math.abs(lm[le][1])
+
+          txer = Math.abs(lm[er][0])
+          tyer = Math.abs(lm[er][1])
+
+          txre = Math.abs(lm[re][0])
+          tyre = Math.abs(lm[re][1])
+
+          const  wcpLeft  = txel - txle
+          const  wcpRight = txre - txer
+          
+          // console.log(`wcpRight: ${wcpRight}`)
+          // console.log(txel,txle,txre,txer);
+          // console.log(`wcpLeft: ${wcpLeft}`)
+          // console.log('left eye',xle);
+          // console.log('ear left',xel);
+          // console.log(`xeye:${txle},xear:${txel},di:${wcpLeft}`);
+          if ( wcpLeft > resemicalDistance )
+          {
+            setshowCornerLeft(true)
+          }else if (wcpLeft < resemicalDistance  || xle == null || xel == null){
+            setshowCornerLeft(false)
+            console.log('Left set to nul !!!!!!!!!!!!!!')
+          }
+          if ( wcpRight > resemicalDistance)
+          {
+            setshowCornerRight(true)
+          }else if ( wcpRight < resemicalDistance || xre == null || xer == null){
+            setshowCornerRight(false)
+            console.log('Right set to nul !!!!!!!!!!!!!!')
+
+          }
+
         });
       }else{
         setxle(null);   //DONE
@@ -139,15 +206,20 @@ const App = ()=>{
         setxel(null);  //DONE
         setyel(null);            //DONE
 
-        setxer(null); //DONE
-        setyer(null);            //DONE
+        setxer(null);
+                //DONE
+        setyer(null);            
+                //DONE
 
-        setxnose(null); //DONE
+        setxnose(null); 
+                //DONE
         setynose(null);
-                  //DONEtrapa
-        setlmlist(null);//DONE
-      
-        trapa = null
+                //DONE
+        setlmlist(null);
+                //DONE
+        setshowCornerRight(null)
+        setshowCornerLeft(null)
+
       }
     }
   };
@@ -162,31 +234,50 @@ const App = ()=>{
     //   setTranslate(b)},900)
     // }
   }, []);
-
-  // console.log(`gh set to : ${gh}`)
-
+  if (
+     showCornerLeft != null
+  ){
+    // console.log(`corner Right set to : ${showCornerRight}`)
+    // console.log(`corner Left  set to : ${showCornerLeft}`)
+  }
+  // console.log(`postion of x set to : ${xel}`)
+  // console.log(`postion of y set to : ${yel}`)
   // console.log(trapa);
   // if (transform != null){
   //   if (trapa < 3){
-    
   //     settt(true);
-    
   //   }else{
-    
   //     settt(false);
-    
   //   };
-    
   //   if (trapa > -9){
-    
   //     setto(true);
-    
   //   }else{
-    
   //     setto(false);
-    
   //   };
   // };
+
+
+  // console.log(`corner Right set to : ${showCornerRight}`)
+  // console.log(`corner Left  set to : ${showCornerLeft}`)
+
+
+  var lefteyex = xle
+  var leftearx = xel
+
+  var lefteyey = yle
+  var lefteary = yel
+  
+  // console.log(leftearx-lefteyex);
+
+  var rightearx = xer
+  var righteyex = xre
+  
+  var righteary = yer
+  var righteyey = yre
+
+  // console.log(righteyex-rightearx);
+
+
   if(load != null){
   // if(1>2){
     return (
@@ -194,8 +285,13 @@ const App = ()=>{
         <header className="App-header">
           <Webcam
             ref={webcamRef}
+
             mirrored={true}
+            height={480}
+            width={640}
+            
             style={{
+
               position: "absolute",
               marginLeft: "auto",
               marginRight: "auto",
@@ -234,8 +330,8 @@ const App = ()=>{
             ref={divRef}
             
             style={{
-
-              position: "absolute",
+              
+              position: "relative",
               marginLeft: "auto",
               marginRight: "auto",
               left: 0,
@@ -248,10 +344,8 @@ const App = ()=>{
             }}
           > 
             {
-              xel != null ?
-              <img src='/assets/Glass.png' style={xle != null  ?{
-          
-
+              xle != null ?
+              <img src='/assets/Glass.png' style={xle !== null  ?{
                 right:`${xle}px`,
                 top:`${yre}px`,
                 zIndex:15,
@@ -259,11 +353,9 @@ const App = ()=>{
                 width:`${xre-xle}px`,
                 position:'absolute',
                 transform:`rotate(${transformds}deg)`
-                
               } : {
                 left:`${0}px`,
                 top:`${0}px`,
-                
                 zIndex:15,
                 height:`${0}px`,
                 width:`${0}px`,
@@ -271,6 +363,55 @@ const App = ()=>{
               }}></img> :<div/>
             }
 
+            {
+              xel != null && showCornerLeft !== null && leftearx-lefteyex>5 ? 
+              <img
+              src='/assets/Corner.png'
+              style={showCornerLeft !== null ?{
+              position: "absolute",
+              top: `${(yel)}px`,
+              right: `${(xer-(xer/6.5) )}px`,
+              zindex: 16,
+              width:  `${Math.abs(leftearx-righteyex)}px`,
+              height: `${Math.abs(lefteary-lefteyey)*8}px`,
+              transform:`skewx(${15}deg)`
+              // width:200,
+              // height:80,
+              }:{
+                position: "absolute",
+                top: `${0}px`,
+                right: `${0}px`,
+                zindex: 9,
+                width: `${0}px`,
+                height: `${0}px`,
+              }}
+              />:<div></div>
+            }
+             {
+              xer != null && showCornerRight !== null && rightearx-righteyex>5 ? 
+              <img
+              src='/assets/Corner.png'
+              style={showCornerRight !== null ?{
+              position: "absolute",
+              top: `${(yer)}px`,
+              right: `${(xer-(xel/6.5))}px`,
+              zindex: 16,
+              width:  `${Math.abs(rightearx-righteyex)*6}px`,
+              height: `${Math.abs(righteary-righteyey)*8}px`,
+              // width:200,
+              // height:80,
+              transform:'rotate(180deg)'
+              }:{
+                position: "absolute",
+                top: `${0}px`,
+                right: `${0}px`,
+                zindex: 9,
+                width: `${0}px`,
+                height: `${0}px`,
+              }}
+              />:<div></div>
+            }
+           
           </div>
         </header>
       </div>
