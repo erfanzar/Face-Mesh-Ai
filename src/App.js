@@ -441,7 +441,9 @@ const App = ()=>{
               right: 0,
               textAlign: "center",
               zindex: 9,
+            
               width: `${640}px`,
+            
               height: `${480}px`,
 
             }}
@@ -449,13 +451,17 @@ const App = ()=>{
             {
               xle != null ?
               <img src='/assets/Glass.png' style={xle !== null  ?{
+                
                 right:`${xle}px`,
                 top:`${yre}px`,
                 zIndex:15,
                 height:`${(xre-xle)/3}px`,
                 width:`${xre-xle}px`,
+                transformStyle:'preserve-3d',
+                transform:`rotateY(${0}deg)`,
+                perspective:`100px`,
                 position:'absolute',
-                transform:`rotate(${transformds}deg)`
+                
               } : {
                 left:`${0}px`,
                 top:`${0}px`,
@@ -529,6 +535,31 @@ const App = ()=>{
               zindex: 16,
               width:  `${Math.abs(rightearx-righteyex)*6}px`,
               height: `${Math.abs(righteary-righteyey)*8}px`,
+              // width:200,
+              // height:80,
+              transform:'rotate(180deg)'
+              }:{
+                position: "absolute",
+                top: `${0}px`,
+                right: `${0}px`,
+                zindex: 9,
+                width: `${0}px`,
+                height: `${0}px`,
+              }}
+              />:<div></div>
+            } */}
+             {/* {
+               dont use this shit
+              xer != null && showCornerRight !== null && righteyex-righteyex>5 ? 
+              <img
+              src='/assets/Corner.png'
+              style={showCornerRight !== null ?{
+              position: "absolute",
+              top: `${(yer)}px`,
+              right: `${(xer-(xel/6.5))}px`,
+              zindex: 16,
+              width:  `${Math.abs(rightearx-righteyex)*6}px`,
+              height: `${Math.abs(righteyex-rightearx)*8}px`,
               // width:200,
               // height:80,
               transform:'rotate(180deg)'
