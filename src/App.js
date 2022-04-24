@@ -556,7 +556,34 @@ const App = ()=>{
           Loading Model From Server...
           Please Be Paitent   
         </p>
-        
+        {/* <vr/> */}
+        {/* <div class="lds-roller">
+        <div>
+
+        </div>
+        <div>
+
+        </div>
+        <div>
+
+        </div>
+        <div>
+
+        </div>
+        <div>
+
+        </div>
+        <div>
+
+        </div>
+        <div>
+
+        </div>
+        <div>
+
+        </div>
+        </div> */}
+        <div class="loader">Loading...</div>
       </div>
     )
   }
