@@ -405,7 +405,7 @@ const App = ()=>{
 
   // console.log(righteyex-rightearx);
 
-
+  console.log(`${(yle-yre)/3}`)
   if(load != null){
   // if(1>2){
     return (
@@ -473,17 +473,17 @@ const App = ()=>{
 
             }}
           > 
-            {
-              xle != null ?
+          {
+            xle != null && ((yle-yre)/3) > -10 ?
               <img src='/assets/4.png' style={xle !== null  ?{
                 
-                right:`${xle-(((yle-yre)/7))}px`,
-                top:`${yre+(((yle-yre)/3))}px`,
+                right:`${xle-(((yle-yre)/9))}px`,
+                top:`${yre+(((yle-yre)/2.6))}px`,
                 zIndex:15,
                 height:`${(((xre-xle)/3+(Math.abs(yle-yre)/4)))}px`,
                 width:`${xre-xle+(Math.abs((yle-yre)/3))}px`,
                 // transformStyle:'preserve-3d',
-                transform:`rotateZ(${(yle-yre)/3.5}deg)`,
+                transform:`rotateZ(${(yle-yre)/3.2}deg)`,
                 perspective:`100px`,
                 position:'absolute',
                
@@ -495,8 +495,31 @@ const App = ()=>{
                 height:`${0}px`,
                 width:`${0}px`,
                 position:'absolute',
-              }}></img> :<div/>
-            }
+              }}/> :
+
+              <img src='/assets/4.png' style={xle !== null  ?{
+                
+                right:`${xle+(((yle-yre)/3))}px`,
+                top:`${yre+(((yle-yre)/2))}px`,
+                zIndex:15,
+                height:`${(((xre-xle)/3+(Math.abs(yle-yre)/4)))}px`,
+                width:`${xre-xle+(Math.abs((yle-yre)/3))}px`,
+                // transformStyle:'preserve-3d',
+                transform:`rotateZ(${(yle-yre)/3}deg)`,
+                perspective:`100px`,
+                position:'absolute',
+               
+                
+              } : {
+                left:`${0}px`,
+                top:`${0}px`,
+                zIndex:15,
+                height:`${0}px`,
+                width:`${0}px`,
+                position:'absolute',
+              }}/>
+            
+          }
 
             {
               lefteyeglassx != null && showCornerLeft !== null && leftearx-lefteyex>5 ? 
@@ -513,7 +536,7 @@ const App = ()=>{
                 // height:30,
                 // borderRadius:30,
                   height: `${Math.abs(lefteary-lefteyey)*5}px`,
-                  transform:`rotateY(${180}deg)`,
+                  transform:`rotateY(${180}deg) all 0.3`,
               //  backgroundColor:'cyan'
                }:{
                  position: "absolute",
