@@ -124,7 +124,7 @@ const drawer = (prediction,ctx)=>{
 
 const App = ()=>{
 
-  var resemicalDistance = 2
+  var resemicalDistance = 7
 
   const webcamRef = useRef(null);
   const divRef = useRef(null);
@@ -135,6 +135,15 @@ const App = ()=>{
   const [transformds,setTransform] = useState(null);
   const [showCornerLeft ,setshowCornerLeft  ] = useState(null)
   const [showCornerRight,setshowCornerRight ] = useState(null)
+
+  const [lefteyeglassx,setlefteyeglassx] = useState(null);
+  const [lefteyeglassy,setlefteyeglassy] = useState(null);
+
+
+  const [righteyeglassx,setrighteyeglassx] = useState(null);
+  const [righteyeglassy,setrighteyeglassy] = useState(null);
+
+
   const [gh,setgh] = useState(null);
   const [gw,setgw] = useState(null);
 
@@ -171,6 +180,7 @@ const App = ()=>{
   var txel = 0;
   var tyel = 0;
   
+  
 
   const [load , setLoad] = useState(null);
   var  net = null;
@@ -194,6 +204,8 @@ const App = ()=>{
   const el = 162;
   const er = 389;
   const nose = 4;
+  const lefteyeglassyPos = 226;
+  const righteyeglassyPos = 446;
   
   let trapa = null;
 
@@ -248,6 +260,13 @@ const App = ()=>{
           setxnose(Math.abs(lm[nose][0])); //DONE
           setynose(Math.abs(lm[nose][1]));          //DONE
           setlmlist([[xle,yle],[xre,yre],[xel,yel],[xer,yer],[xnose,ynose]]);//DONE
+
+
+          setlefteyeglassx(Math.abs(lm[lefteyeglassyPos][0]))
+          setlefteyeglassy(Math.abs(lm[lefteyeglassyPos][1]))
+
+          setrighteyeglassx(Math.abs(lm[righteyeglassyPos][0]))
+          setrighteyeglassy(Math.abs(lm[righteyeglassyPos][1]))
           
           setTransform((yle-yre / 2)); //DONE
           trapa = transformds;
@@ -322,6 +341,12 @@ const App = ()=>{
                 //DONE
         setshowCornerRight(null)
         setshowCornerLeft(null)
+
+        setlefteyeglassx(null)
+        setlefteyeglassy(null)
+
+        setrighteyeglassx(null)
+        setrighteyeglassy(null)
 
       }
     }
@@ -450,17 +475,18 @@ const App = ()=>{
           > 
             {
               xle != null ?
-              <img src='/assets/Glass.png' style={xle !== null  ?{
+              <img src='/assets/4.png' style={xle !== null  ?{
                 
-                right:`${xle}px`,
-                top:`${yre}px`,
+                right:`${xle-(((yle-yre)/7))}px`,
+                top:`${yre+(((yle-yre)/3))}px`,
                 zIndex:15,
-                height:`${(xre-xle)/3}px`,
-                width:`${xre-xle}px`,
-                transformStyle:'preserve-3d',
-                transform:`rotateY(${0}deg)`,
+                height:`${(((xre-xle)/3+(Math.abs(yle-yre)/4)))}px`,
+                width:`${xre-xle+(Math.abs((yle-yre)/3))}px`,
+                // transformStyle:'preserve-3d',
+                transform:`rotateZ(${(yle-yre)/3.5}deg)`,
                 perspective:`100px`,
                 position:'absolute',
+               
                 
               } : {
                 left:`${0}px`,
@@ -473,20 +499,21 @@ const App = ()=>{
             }
 
             {
-              xel != null && showCornerLeft !== null && leftearx-lefteyex>5 ? 
-               <img 
-               src='/assets/CornerLeft.png'
-               style={showCornerLeft !== null ?{
-               position: "absolute",
-               top: `${(yre)}px`,
-               right: `${(xer-((Math.abs(leftearx-righteyex)/4)))}px`,
-               zindex: 16,
-               width:  `${Math.abs(leftearx-righteyex)/2}px`,
-              // width:30,
-              // height:30,
-              // borderRadius:30,
-               height: `${Math.abs(lefteary-lefteyey)*7}px`,
-               transform:`skewx(${15}deg)`,
+              lefteyeglassx != null && showCornerLeft !== null && leftearx-lefteyex>5 ? 
+                <img 
+                  src='/assets/3.png'
+                  style={showCornerLeft !== null ?{
+                  position: "absolute",
+                  top: `${(lefteyeglassy-(lefteyeglassy/9))}px`,
+                //  right: `${(xer-((Math.abs(leftearx-righteyex)/4)))}px`,
+                  right:`${righteyeglassx+(righteyeglassx/25)}px`,
+                  zindex: 16,
+                  width:  `${Math.abs(leftearx-righteyex)/2.5}px`,
+                // width:30,
+                // height:30,
+                // borderRadius:30,
+                  height: `${Math.abs(lefteary-lefteyey)*5}px`,
+                  transform:`rotateY(${180}deg)`,
               //  backgroundColor:'cyan'
                }:{
                  position: "absolute",
@@ -499,21 +526,19 @@ const App = ()=>{
                />:<div></div>
             }
             {
-              xer != null && showCornerRight !== null && rightearx-righteyex<5 ? 
-               <img 
-               src='/assets/CornerRight.png'
-               style={showCornerRight !== null ?{
-               position: "absolute",
-               top: `${(yre)}px`,
-               right: `${(xel-((Math.abs(rightearx-lefteyex)/4)))}px`,
-               zindex: 16,
-               width:  `${Math.abs(rightearx-lefteyex)/2}px`,
-              // width:30,
-              // height:30,
-              // borderRadius:30,
-               height: `${Math.abs(righteary-righteyey)*7}px`,
-               transform:`skewx(${15}deg)`,
-              //  backgroundColor:'cyan'
+              righteyeglassx != null && showCornerRight !== null && rightearx-righteyex<5 ? 
+                <img 
+                  src='/assets/3.png'
+                  style={showCornerRight !== null ?{
+                  position: "absolute",
+                  top: `${(righteyeglassy-(righteyeglassy/11))}px`,
+                  right: `${(xel-((Math.abs(rightearx-lefteyex)/4)))}px`,
+                  zindex: 16,
+                  // right:`${righteyeglassx}px`,
+                  width:  `${Math.abs(rightearx-lefteyex)/2.5}px`,
+                  height: `${Math.abs(righteary-righteyey)*5}px`,
+                  transform:`skewY(-${(yre-righteyeglassy)}deg)`,
+
                }:{
                  position: "absolute",
                  top: `${0}px`,
